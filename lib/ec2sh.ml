@@ -2,7 +2,7 @@
 open Lwt
 open Printf
 
-let run = Lwt_unix.run 
+let run = Lwt_unix.run
 
 let creds = Aws_util.creds_of_env ()
 
@@ -17,8 +17,8 @@ let describe_regions () =
 let describe_spot_price_history ?instance_type ?region () =
   let history = run (EC2.describe_spot_price_history ?region ?instance_type creds) in
   List.iter (
-    fun h -> 
-      Printf.printf "%s\t%s\t%0.4f\t%0.3f\n" 
+    fun h ->
+      Printf.printf "%s\t%s\t%0.4f\t%0.3f\n"
         h#instance_type
         h#product_description
         h#spot_price
@@ -29,10 +29,10 @@ let describe_spot_price_history ?instance_type ?region () =
 let terminate_instances ?region instance_ids =
   let resp = run (EC2.terminate_instances ?region creds instance_ids) in
   match resp with
-    | `Ok killed -> 
+    | `Ok killed ->
       List.iter (
         fun i ->
-          printf "%s\t%s\t%s\n" 
+          printf "%s\t%s\t%s\n"
             i#instance_id
             (EC2.string_of_instance_state i#previous_state)
             (EC2.string_of_instance_state i#current_state)
@@ -42,8 +42,8 @@ let terminate_instances ?region instance_ids =
 let print_reservation r =
   List.iter (
     fun instance ->
-      printf "%s\t%s\t%s\t%s\t%s\t%f\n" 
-        r#id 
+      printf "%s\t%s\t%s\t%s\t%s\t%f\n"
+        r#id
         instance#id
         instance#image_id
         (string_of_opt instance#private_dns_name_opt)
@@ -58,21 +58,21 @@ let describe_instances ?region instance_ids =
       List.iter print_reservation reservations
     | `Error msg -> print_endline msg
 
-let run_instances 
-    ~key_name 
+let run_instances
+    ~key_name
     ~region
-    ~placement_availability_zone 
-    ~image_id 
-    ~min_count 
+    ~placement_availability_zone
+    ~image_id
+    ~min_count
     ~max_count () =
 
-  let resp = run (EC2.run_instances 
-    creds 
-    ~key_name 
+  let resp = run (EC2.run_instances
+    creds
+    ~key_name
     ~region
-    ~placement_availability_zone 
+    ~placement_availability_zone
     ~image_id
-    ~min_count 
+    ~min_count
     ~max_count
   )
   in
@@ -110,10 +110,10 @@ let describe_spot_instance_requests ?region sir_ids () =
 let cancel_spot_instance_requests ?region sir_list =
   let resp = run (EC2.cancel_spot_instance_requests ?region creds sir_list) in
   match resp with
-    | `Ok sir_state_list -> 
+    | `Ok sir_state_list ->
       List.iter (
-        fun (sir, state) -> printf "%s\t%s\n" 
+        fun (sir, state) -> printf "%s\t%s\n"
           sir (EC2.string_of_spot_instance_request_state state)
       ) sir_state_list
     | `Error msg -> print_endline msg
-  
+

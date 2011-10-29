@@ -9,7 +9,7 @@ let list_domains creds =
   let rec loop ?token accu =
     SDB.list_domains creds ?token () >>= function
       | `Error msg -> return (`Error msg)
-      | `Ok (domains, next_opt) -> 
+      | `Ok (domains, next_opt) ->
         let accu' = domains :: accu in
         match next_opt with
           | Some token -> loop ~token accu'
@@ -19,8 +19,8 @@ let list_domains creds =
 
 let main () =
   let creds = Aws_util.creds_of_env () in
-  lwt domains = list_domains creds >>= function 
-    | `Error (a,b) -> 
+  lwt domains = list_domains creds >>= function
+    | `Error (a,b) ->
         printf "list domains failure: %s %s\n%!" a b >>
           exit 1
     | `Ok list -> return list
@@ -28,8 +28,8 @@ let main () =
   printf "found %d domains\n%!" (List.length domains) >>
     lwt _, map = Lwt_list.fold_left_s (
       fun (count, map) domain ->
-        printf "%d. %s\n%!" count domain >> 
-          let count_s = string_of_int count in 
+        printf "%d. %s\n%!" count domain >>
+          let count_s = string_of_int count in
           let map' = StringMap.add count_s domain map in
           return (count + 1, map')
     ) (1, StringMap.empty) domains in
@@ -80,7 +80,7 @@ All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
-      
+
 1. Redistributions of source code must retain the above copyright
    notice, this list of conditions and the following disclaimer.
 

@@ -2,24 +2,24 @@
 
 exception Error of string
 
-type region = [ 
-| `US_EAST_1 
-| `US_WEST_1 
-| `EU_WEST_1 
-| `AP_SOUTHEAST_1 
+type region = [
+| `US_EAST_1
+| `US_WEST_1
+| `EU_WEST_1
+| `AP_SOUTHEAST_1
 | `AP_NORTHEAST_1
 ]
 
 val string_of_region : region -> string
 val region_of_string : string -> region
 
-type amz_acl = [ 
-| `Private 
-| `public_read 
-| `public_read_write 
-| `authenticated_read 
-| `bucket_owner_read 
-| `bucket_owner_full_control 
+type amz_acl = [
+| `Private
+| `public_read
+| `public_read_write
+| `authenticated_read
+| `bucket_owner_read
+| `bucket_owner_full_control
 ]
 
 (* Note: `PermanentRedirect is a result of many of the functions
@@ -27,41 +27,41 @@ type amz_acl = [
    correct region for the bucket in question, the target region of is
    unknown. *)
 
-val create_bucket : Creds.t ->  region -> string -> amz_acl -> 
+val create_bucket : Creds.t ->  region -> string -> amz_acl ->
   [> `Error of string | `Ok ] Lwt.t
 
-val delete_bucket : Creds.t ->  region -> string ->  
+val delete_bucket : Creds.t ->  region -> string ->
   [> `Error of string | `Ok | `PermanentRedirect of region option ] Lwt.t
 
 val list_buckets : Creds.t -> region ->
-  [> `Error of string 
-  | `Ok of < creation_date : string; name : string > list 
-  | `PermanentRedirect of region option 
+  [> `Error of string
+  | `Ok of < creation_date : string; name : string > list
+  | `PermanentRedirect of region option
   ] Lwt.t
 
-val get_object_s : 
+val get_object_s :
   Creds.t option ->
   region ->
   bucket:string ->
-  objekt:string -> 
+  objekt:string ->
   [> `NotFound | `Error of string | `Ok of string | `AccessDenied | `PermanentRedirect of region option ] Lwt.t
 
 val get_object :
   ?byte_range: (int * int) ->
   Creds.t option ->
-  region -> 
+  region ->
   bucket:string ->
   objekt:string ->
   path:string ->
   [> `Error of string | `NotFound | `Ok | `AccessDenied | `PermanentRedirect of region option ] Lwt.t
 
-val put_object : 
+val put_object :
   ?content_type:string ->
   ?amz_acl:amz_acl ->
   Creds.t ->
-  region ->  
+  region ->
   bucket:string ->
-  objekt:string -> 
+  objekt:string ->
   body:[ `File of string | `String of string ] ->
   [> `Error of string | `Ok | `AccessDenied | `PermanentRedirect of region option ] Lwt.t
 
@@ -69,46 +69,46 @@ val get_object_metadata :
   Creds.t ->
   region ->
   bucket:string ->
-  objekt:string -> 
-  [> `NotFound 
-  | `Error of string 
-  | `Ok of < 
-      content_length : int; 
-   content_type : string; 
-   etag : string; 
+  objekt:string ->
+  [> `NotFound
+  | `Error of string
+  | `Ok of <
+      content_length : int;
+   content_type : string;
+   etag : string;
    last_modified : float
-   > 
+   >
   | `PermanentRedirect of region option
   ] Lwt.t
 
-    
+
 val list_objects :
   Creds.t ->
   region ->
-  string -> 
-  [> `Error of string 
-  | `NotFound 
-  | `Ok of < 
-      name : string; 
+  string ->
+  [> `Error of string
+  | `NotFound
+  | `Ok of <
+      name : string;
    prefix : string option;
-   marker : string option; 
-   max_keys : int; 
-   is_truncated : bool; 
-   objects : < 
-     etag : string; 
+   marker : string option;
+   max_keys : int;
+   is_truncated : bool;
+   objects : <
+     etag : string;
    last_modified : float;
-   name : string; 
+   name : string;
    owner_display_name : string;
-   owner_id : string; 
+   owner_id : string;
    size : int;
-   storage_class : string 
+   storage_class : string
    > list;
-   > 
+   >
   | `PermanentRedirect of region option
   ] Lwt.t
 
 type permission = [
-| `read 
+| `read
 | `write
 | `read_acp
 | `write_acp
@@ -117,17 +117,17 @@ type permission = [
 val string_of_permission : permission -> string
 val permission_of_string : string -> permission
 
-type identity = [ 
+type identity = [
 | `amazon_customer_by_email of string
 | `canonical_user of < display_name : string; id : string >
-| `group of string 
+| `group of string
 ]
 val string_of_identity : identity -> string
 
-class canonical_user : id:string -> display_name:string -> 
-object 
-  method display_name : string 
-  method id : string 
+class canonical_user : id:string -> display_name:string ->
+object
+  method display_name : string
+  method id : string
 end
 
 type grant = identity * permission
@@ -141,7 +141,7 @@ end
 val get_bucket_acl :
   Creds.t ->
   region ->
-  string -> 
+  string ->
   [> `Error of string | `NotFound | `Ok of acl | `PermanentRedirect of region option ] Lwt.t
 
 val set_bucket_acl :
@@ -164,7 +164,7 @@ val get_object_acl :
   region ->
   bucket:string ->
   objekt:string ->
-  [> `Error of string | `NotFound | `Ok of acl | `PermanentRedirect of region option ] Lwt.t  
+  [> `Error of string | `NotFound | `Ok of acl | `PermanentRedirect of region option ] Lwt.t
 
 val set_object_acl :
   Creds.t ->
@@ -172,7 +172,7 @@ val set_object_acl :
   bucket:string ->
   objekt:string ->
   acl ->
-  [> `Error of string | `NotFound | `Ok | `PermanentRedirect of region option ] Lwt.t  
+  [> `Error of string | `NotFound | `Ok | `PermanentRedirect of region option ] Lwt.t
 
 
 val get_bucket_policy :
@@ -200,7 +200,7 @@ val set_bucket_policy :
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are
    met:
-   
+
    1. Redistributions of source code must retain the above copyright
    notice, this list of conditions and the following disclaimer.
 

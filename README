@@ -9,7 +9,7 @@ Aws depends directly on the following packages:
 -  lwt
 -  [xmlm](http://github.com/samoht/xmlm)
 -  [cohttp](http://github.com/williamleferrand/ocaml-cohttp)
--  yojson 
+-  yojson
 -  (eventually) ocsigen
 
-All of the packages except the last two are available via GODI.  
+All of the packages except the last two are available via GODI.
